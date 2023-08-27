@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tensorflow-hooks"
+version = "0.1.0"
+description = "PyTorch-like Hooks for TensorFlow Keras layers"
+authors = [
+    {name = "Craig Chan"}
+]
+maintainers = [
+    {name = "Craig Chan"}
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+keywords = [
+    "tensorflow", "tf", "keras", "pytorch", "torch", "hooks",
+    "deep learning", "machine learning",
+    "ml", "neural network",
+]
+
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[tool.setuptools]
+packages = ["tf_hooks"]
+
+[tool.isort]
+known_third_party = ["tensorflow", "keras", "numpy", "scipy"]
+known_first_party = ["tf_hooks"]
+profile = "black"
+default_section = "THIRDPARTY"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+force_alphabetical_sort_within_sections = true
+
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311"]
+
+[tool.flake8]
+ignore = ["D104"]
+extend-ignore = ["E203"]
+max-line-length = 88
