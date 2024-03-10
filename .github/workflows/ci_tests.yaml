@@ -1,0 +1,37 @@
+name: CI Tests
+on:
+  pull_request:
+    branches:
+      - main
+      - release/**
+  push:
+    branches:
+      - main
+      - release/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.9
+          - 3.10
+          - 3.11
+        tf-version:
+          - 2.14.0
+          - 2.15.0
+          - 2.16.1
+    container:
+      image: python:${{ matrix.python-version }}
+    steps:
+      - name: Get tensorflow-hooks
+        uses: actions/checkout@v4
+      - name: Install TensorFlow
+        run: |
+          pip install --upgrade pip
+          pip install tensorflow==${{ matrix.tf-version }}
+      - name: Install tensorflow-hooks
+        run: pip install .[test]
+      - name: Test tensorflow-hooks
+        run: pytest tests
