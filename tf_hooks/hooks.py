@@ -80,7 +80,9 @@ class TFForwardPreHook(TFHook):
         if hook_out is None:
             return args, kwargs
 
-        generic_error_msg = "Forward prehook's function output tuple of (tuple, dict)"
+        generic_error_msg = (
+            "Forward prehook's function output must be tuple of (tuple, dict)"
+        )
         assert isinstance(hook_out, tuple), generic_error_msg
         assert len(hook_out) == 2, generic_error_msg
         assert isinstance(hook_out[0], tuple) and isinstance(
