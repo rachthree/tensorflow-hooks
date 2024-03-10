@@ -15,13 +15,13 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.9
-          - 3.10
-          - 3.11
+          - "3.9"
+          - "3.10"
+          - "3.11"
         tf-version:
-          - 2.14.0
-          - 2.15.0
-          - 2.16.1
+          - "2.14.0"
+          - "2.15.0"
+          - "2.16.1"
     container:
       image: python:${{ matrix.python-version }}
     steps:
