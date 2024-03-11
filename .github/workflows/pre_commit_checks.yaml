@@ -23,7 +23,7 @@ jobs:
     - run: |
         pip3 install pre-commit
         pre-commit install
-        if [ $${{ github.ref }} == 'refs/heads/main' ]; then \
+        if [ ${{ github.ref }} == 'refs/heads/main' ]; then \
           SKIP=no-commit-to-branch pre-commit run --all-files; \
         else \
           pre-commit run --all-files; \
