@@ -1,9 +1,27 @@
 """Test utilities."""
+import os
 from collections import deque
+from importlib import metadata
 from typing import Mapping
 
 import tensorflow as tf
+from packaging import version
 from safetensors.tensorflow import safe_open, save_file
+
+
+def use_legacy_keras():
+    """Check if legacy Keras is available.
+
+    See https://github.com/tensorflow/tensorflow/releases/tag/v2.16.1
+
+    Returns:
+        True if legacy Keras is available, False if not.
+    """
+    tf_version = version.parse(metadata.version("tensorflow"))
+    if tf_version < version.parse("2.16.0"):
+        return True
+    else:
+        return os.environ.get("TF_USE_LEGACY_KERAS", None) == "1"
 
 
 def create_single_layer_model():

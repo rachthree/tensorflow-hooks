@@ -2,8 +2,9 @@
 from pathlib import Path
 from typing import Any, Callable
 
+import pytest
 import tensorflow as tf
-from utils import load_io_tensors, save_io_tensors, TFGraph
+from utils import load_io_tensors, save_io_tensors, TFGraph, use_legacy_keras
 
 from tf_hooks import register_forward_hook, register_forward_pre_hook
 
@@ -69,10 +70,12 @@ class TestScenarios:
     def setup_method(self):
         """Set up each test."""
         self.model = tf.keras.applications.resnet50.ResNet50()
-        self.graph = TFGraph(self.model)
         self.forward_hooks = []
         self.pre_forward_hooks = []
 
+    @pytest.mark.skipif(
+        not use_legacy_keras(), reason="Test relies on keras.src.engine.node.Node."
+    )
     def test_save_io(self, tmp_path):
         """Test saving inputs and outputs via hooks."""
         test_input = tf.random.uniform((4, 224, 224, 3))
