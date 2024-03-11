@@ -48,8 +48,9 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-        tf-version:
-          - "2.16.1"
+        include:
+          - tf-version: "2.16.1"
+            tf-keras-version: "2.16"
     container:
       image: python:${{ matrix.python-version }}
     steps:
@@ -58,7 +59,7 @@ jobs:
       - name: Install TensorFlow
         run: |
           pip install --upgrade pip
-          pip install tensorflow==${{ matrix.tf-version }} tf-keras==${{ matrix.tf-version }}
+          pip install tensorflow==${{ matrix.tf-version }} tf-keras~=${{ matrix.tf-keras-version }}
       - name: Install tensorflow-hooks
         run: pip install .[test]
       - name: Test tensorflow-hooks
