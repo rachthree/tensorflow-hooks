@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import types
-from collections import OrderedDict
 from typing import Any, Callable, TYPE_CHECKING
 
 from tf_hooks.constants import FORWARD_HOOKS_ATTR, FORWARD_PRE_HOOKS_ATTR, OLD_CALL_ATTR
@@ -99,12 +98,20 @@ def register_forward_pre_hook(
     hook = TFForwardPreHook(layer, fn)
 
     if not hasattr(layer, FORWARD_PRE_HOOKS_ATTR):
-        setattr(layer, FORWARD_PRE_HOOKS_ATTR, OrderedDict())
+        setattr(layer, FORWARD_PRE_HOOKS_ATTR, {})
 
     pre_hooks = getattr(layer, FORWARD_PRE_HOOKS_ATTR)
-    pre_hooks[hook.id] = hook
     if prepend:
-        pre_hooks.move_to_end(hook.id, last=False)
+        # Normally, OrderedDict.move_to_end should be used, but
+        # Later Keras >= 3.0 converts dicts to keras.src.utils.tracking.TrackedDict,
+        # which doe not have move_to_end
+        # Note: This only works with Python > 3.7 since
+        #  that is when dictionaries started maintaining order.
+        tmp_pre_hooks = {hook.id: hook}
+        tmp_pre_hooks.update(pre_hooks)
+        setattr(layer, FORWARD_PRE_HOOKS_ATTR, tmp_pre_hooks)
+    else:
+        pre_hooks[hook.id] = hook
     _all_forward_pre_hooks[hook.id] = hook
     return hook
 
@@ -142,11 +149,19 @@ def register_forward_hook(
     _switch_calls_if_needed(layer)
     hook = TFForwardHook(layer, fn, always_call=always_call)
     if not hasattr(layer, FORWARD_HOOKS_ATTR):
-        setattr(layer, FORWARD_HOOKS_ATTR, OrderedDict())
+        setattr(layer, FORWARD_HOOKS_ATTR, {})
 
     hooks = getattr(layer, FORWARD_HOOKS_ATTR)
-    hooks[hook.id] = hook
     if prepend:
-        hooks.move_to_end(hook.id, last=False)
+        # Normally, OrderedDict.move_to_end should be used, but
+        # Later Keras >= 3.0 converts dicts to keras.src.utils.tracking.TrackedDict,
+        # which doe not have move_to_end
+        # Note: This only works with Python > 3.7 since
+        #  that is when dictionaries started maintaining order.
+        tmp_hooks = {hook.id: hook}
+        tmp_hooks.update(hooks)
+        setattr(layer, FORWARD_HOOKS_ATTR, tmp_hooks)
+    else:
+        hooks[hook.id] = hook
     _all_forward_hooks[hook.id] = hook
     return hook
