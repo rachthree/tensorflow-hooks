@@ -23,8 +23,8 @@ jobs:
     - run: |
         pip3 install pre-commit
         pre-commit install
-        if [ $$(git branch --show-current) == 'main' ]; then
-          SKIP=no-commit-to-branch pre-commit run --all-files
-        else
-          pre-commit run --all-files
+        if [ $$(git branch --show-current) == 'main' ]; then \
+          SKIP=no-commit-to-branch pre-commit run --all-files; \
+        else \
+          pre-commit run --all-files; \
         fi
