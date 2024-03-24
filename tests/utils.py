@@ -120,11 +120,11 @@ class TFGraph:
             else tensor._keras_history[0]._inbound_nodes[0]
         )
 
-    def _get_outbound_nodes(self, layer: tf.keras.Layer):
+    def _get_outbound_nodes(self, layer: tf.keras.layers.Layer):
         """Get the outbound nodes of a layer.
 
         Args:
-            layer (tf.keras.Layer): The layer
+            layer (tf.keras.layers.Layer): The layer
 
         Returns:
             List of outbound nodes.
