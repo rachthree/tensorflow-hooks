@@ -2,7 +2,7 @@
 import os
 from collections import deque
 from importlib import metadata
-from typing import Mapping
+from typing import Any, Mapping
 
 import tensorflow as tf
 from packaging import version
@@ -91,7 +91,11 @@ class TFLayerNode:
 
 
 class TFGraph:
-    """Graph to describe a TF Keras model."""
+    """Graph to describe a TF Keras model.
+
+    For Keras 3.x, this uses internal functionality that may break.
+    See https://github.com/keras-team/keras/issues/19278
+    """
 
     def __init__(self, model: tf.keras.Model):
         """Initialize a TFGraph.
@@ -101,6 +105,9 @@ class TFGraph:
         """
         self._graph = {}
         self.input_layer_names = []
+        self.legacy_keras = version.parse(
+            metadata.version("tensorflow")
+        ) < version.parse("2.16.0")
         self.traverse(model)
 
     def __getitem__(self, layer_name: str):
@@ -114,6 +121,44 @@ class TFGraph:
         """
         return self._graph[layer_name]
 
+    def _get_input_tensor_node(self, tensor: tf.Tensor):
+        """Provide the Keras node of an input tensor.
+
+        Args:
+            tensor (tf.keras.Tensor): The input tensor.
+
+        Returns:
+            The Keras node. Type changes between Keras 3.x and legacy.
+        """
+        return (
+            tensor.node
+            if self.legacy_keras
+            else tensor._keras_history[0]._inbound_nodes[0]
+        )
+
+    def _get_outbound_nodes(self, layer: tf.keras.Layer):
+        """Get the outbound nodes of a layer.
+
+        Args:
+            layer (tf.keras.Layer): The layer
+
+        Returns:
+            List of outbound nodes.
+        """
+        return layer.outbound_nodes if self.legacy_keras else layer._outbound_nodes
+
+    def _get_node_layer(self, node: Any):
+        """Get the layer of a Keras node.
+
+        Args:
+            node (Any): The Keras node.
+                Type changes between Keras 3.x and legacy.
+
+        Returns:
+            The TF Keras layer.
+        """
+        return node.layer if self.legacy_keras else node.operation
+
     def traverse(self, model: tf.keras.Model):
         """Traverse the model to generate the graph.
 
@@ -124,15 +169,20 @@ class TFGraph:
         for input_tensor in model.inputs:
             # model.inputs is List[KerasTensor]
             # model.inputs[i].node.layer provides the layer
+            # For Keras 3.x, this is
+            #   model.inputs[i]._keras_history[0]._inbound_nodes[0].operation
             # model.inputs[i].node.layer.outbound_nodes[j] is needed
+            # For keras 3.x, this is
+            #   model.inputs[i]._keras_history[0]._outbound_nodes[j].operation
             # to find the next layers
-            q.append(input_tensor.node)
-            self.input_layer_names.append(input_tensor.node.layer.name)
+            keras_node = self._get_input_tensor_node(input_tensor)
+            q.append(keras_node)
+            self.input_layer_names.append(self._get_node_layer(keras_node).name)
 
         while q:
-            tf_node = q.popleft()
+            keras_node = q.popleft()
 
-            layer = tf_node.layer
+            layer = self._get_node_layer(keras_node)
             layer_name = layer.name
             if layer_name not in self._graph:
                 node = TFLayerNode(layer_name)
@@ -140,8 +190,8 @@ class TFGraph:
             else:
                 node = self._graph[layer_name]
 
-            for outbound_tf_node in layer.outbound_nodes:
-                output_layer_name = outbound_tf_node.layer.name
+            for outbound_keras_node in self._get_outbound_nodes(layer):
+                output_layer_name = self._get_node_layer(outbound_keras_node).name
                 if output_layer_name not in self._graph:
                     output_layer_node = TFLayerNode(output_layer_name)
                     self._graph[output_layer_name] = output_layer_node
@@ -149,6 +199,6 @@ class TFGraph:
                     output_layer_node = self._graph[output_layer_name]
 
                 node.add_child(output_layer_node)
-                q.append(outbound_tf_node)
+                q.append(outbound_keras_node)
 
         return
