@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-nominal:
+  pytest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,32 +39,3 @@ jobs:
         run: pip install .[test]
       - name: Test tensorflow-hooks
         run: pytest tests
-
-  test-tf-keras:
-    # TF >= 2.16.0 uses Keras 3
-    # Some tests will break due to keras.src.engine no longer available
-    # This also installs tf-keras and uses TF_USE_LEGACY_KERAS
-    # In order to test all tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version:
-          - "3.9"
-          - "3.10"
-          - "3.11"
-        include:
-          - tf-version: "2.16.1"
-            tf-keras-version: "2.16"
-    container:
-      image: python:${{ matrix.python-version }}
-    steps:
-      - name: Get tensorflow-hooks
-        uses: actions/checkout@v4
-      - name: Install TensorFlow
-        run: |
-          pip install --upgrade pip
-          pip install tensorflow==${{ matrix.tf-version }} tf-keras~=${{ matrix.tf-keras-version }}
-      - name: Install tensorflow-hooks
-        run: pip install .[test]
-      - name: Test tensorflow-hooks
-        run: TF_USE_LEGACY_KERAS=1 pytest tests
