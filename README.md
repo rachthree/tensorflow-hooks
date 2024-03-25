@@ -27,12 +27,13 @@ def prehook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict):
     print(f"{layer.name} args received: {args}")
     print(f"{layer.name} kwargs received: {kwargs}")
 
+prehooks = []
 for layer in model.layers:
     prehooks.append(register_forward_pre_hook(layer, prehook_fn))
 
 test_input = tf.random.uniform((4, 224, 224, 3))
 
-model(test_input)
+test_output = model(test_input)
 ```
 
 The above would result in printing out all the inputs seen by each layer.
@@ -81,7 +82,7 @@ for layer in model.layers:
 
 test_input = tf.random.uniform((4, 224, 224, 3))
 
-model(test_input)
+test_output = model(test_input)
 ```
 
 The above would result in printing out all the inputs and outputs seen by each layer.
