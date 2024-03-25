@@ -85,7 +85,7 @@ test_input = tf.random.uniform((4, 224, 224, 3))
 test_output = model(test_input)
 ```
 
-The above would result in printing out all the inputs and outputs seen by each layer.
+The above would result in printing out all layers' inputs and outputs.
 If the received outputs were modified, or new ones provided, this would affect downstream layers.
 
 Each item in the `hooks` list above is a `tf_hook.hooks.TFForwardHook`.
