@@ -81,12 +81,19 @@ def register_forward_pre_hook(
         fn (Callable): The function for the hook to use.
             This must have the following signature:
 
-            `hook(layer, args, kwargs) -> tuple or None`
+            ```
+            prehook(
+                layer: tf.keras.layers.Layer,
+                args: tuple,
+                kwargs: dict,
+            ) -> Union[None, Tuple[tuple, dict]]
+            ```
 
             where the outputted tuple should be
             `(processed_args: tuple, processed_kwargs: dict)` if any.
-            If `None`, the original args and kwargs will be passed onto the
-            next hook or the layer to use.
+            If `None`, the received args and kwargs will be passed onto the
+            next hook or the layer to use. Note that if they are modified
+            in-place, those changes will take effect.
         prepend (bool, optional): `True` to execute the hook before
             all existing forward pre-hooks on the layer. Defaults to `False`
             to execute after all existing forward pre-hooks on the layer.
@@ -121,7 +128,7 @@ def register_forward_hook(
     fn: Callable,
     prepend: bool = False,
     always_call: bool = False,
-) -> TFForwardPreHook:
+) -> TFForwardHook:
     """Register a forward hook to a layer.
 
     The hook executes after a layer is called.
@@ -131,11 +138,20 @@ def register_forward_hook(
         fn (Callable): The function for the hook to use.
             This must have the following signature:
 
-            `hook(layer, args, kwargs, outputs) -> Any`
+            ```
+            hook(
+                layer: tf.keras.layers.Layer,
+                args: tuple,
+                kwargs: dict,
+                outputs: Union[tf.Tensor, tuple],
+            ) -> Union[None, tf.Tensor, tuple]
+            ```
 
-            where the outputted tuple should be the processed outputs, if any.
-            If `None`, the original outputs will be passed onto the
-            next hook or the layer to use.
+            where the outputted tuple should be the processed outputs, if any,
+            or the singular output tensor.
+            If `None`, the received outputs will be passed onto the
+            next hook or layer to use. Note that if they are modified
+            in-place, those changes will take effect.
         prepend (bool, optional): `True` to execute the hook before
             all existing forward hooks on the layer. Defaults to `False`
             to execute after all existing forward hooks on the layer.
