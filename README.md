@@ -23,7 +23,7 @@ from tf_hooks import register_forward_pre_hook
 
 model = model = tf.keras.applications.resnet50.ResNet50()
 
-def prehook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict) :
+def prehook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict):
     print(f"{layer.name} args received: {args}")
     print(f"{layer.name} kwargs received: {kwargs}")
 
@@ -54,10 +54,10 @@ will execute in the order it was registered for the layer. To prepend a pre-hook
 
 A forward hook callable must be:
 ```python
-fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict, output: Union[tf.Tensor, tuple]) -> Union[None, tf.Tensor, tuple]
+fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict, outputs: Union[tf.Tensor, tuple]) -> Union[None, tf.Tensor, tuple]
 ```
 
-After the layer's forward method, the hook will execute, using the layer inputs and output. The hook either returns `None` as a passthrough (or outputs have been modified in-place) or
+After the layer's forward method, the hook will execute, using the layer inputs and outputs. The hook either returns `None` as a passthrough (or outputs have been modified in-place) or
 whatever objects the hook function returns. These will be provided to the next layer(s).
 
 `tf-hooks` registers the hook and modifies the layer's `call` method via `tf_hooks.register_forward_hook`.
@@ -70,10 +70,10 @@ from typing import Union
 
 model = model = tf.keras.applications.resnet50.ResNet50()
 
-def hook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict, output: Union[tf.Tensor, tuple]) -> Union[None, tf.Tensor, tuple]:
+def hook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict, outputs: Union[tf.Tensor, tuple]):
     print(f"{layer.name} args received: {args}")
     print(f"{layer.name} kwargs received: {kwargs}")
-    print(f"{layer.name} output: {output}")
+    print(f"{layer.name} outputs: {outputs}")
 
 hooks = []
 for layer in model.layers:
