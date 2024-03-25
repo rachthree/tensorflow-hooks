@@ -47,7 +47,7 @@ for prehook in prehooks:
 ```
 
 Notes:
-* Multiple pre-hooks can be applied to the same layer via using `register_forward_pre_hook` again, and each hook
+* Multiple pre-hooks can be applied to the same layer via using `register_forward_pre_hook` again, and each pre-hook
 will execute in the order it was registered for the layer. To prepend a pre-hook, use `prepend=True` when using `register_forward_pre_hook`.
 
 
