@@ -6,7 +6,7 @@ import uuid
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from datetime import datetime
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable, Tuple, TYPE_CHECKING, Union
 
 from tf_hooks.cleanup import _cleanup_if_needed
 from tf_hooks.constants import FORWARD_HOOKS_ATTR, FORWARD_PRE_HOOKS_ATTR
@@ -56,15 +56,22 @@ class TFForwardPreHook(TFHook):
 
     The function `fn` provided on init must have the following signature:
 
-        `hook(layer, args, kwargs) -> tuple or None`
+        ```
+        prehook(
+            layer: tf.keras.layers.Layer,
+            args: tuple,
+            kwargs: dict,
+        ) -> Union[None, Tuple[tuple, dict]]
+        ```
 
         where the outputted tuple should be
         `(processed_args: tuple, processed_kwargs: dict)` if any.
-        If `None`, the original args and kwargs will be passed onto the
-        next hook or the layer to use.
+        If `None`, the received args and kwargs will be passed onto the
+        next hook or the layer to use. Note that if they are modified
+        in-place, those changes will take effect.
     """
 
-    def __call__(self, args: tuple, kwargs: dict) -> tuple:
+    def __call__(self, args: tuple, kwargs: dict) -> Tuple[tuple, dict]:
         """Process the layer's inputs before the layer is called.
 
         Args:
@@ -73,7 +80,7 @@ class TFForwardPreHook(TFHook):
 
         Returns:
             tuple: A tuple of the processed (args, kwargs) if any,
-            otherwise the original inputs.
+            otherwise the passed-through inputs.
         """
         hook_out = self.fn(self.layer, args, kwargs)
 
@@ -108,12 +115,20 @@ class TFForwardHook(TFHook):
 
     The function `fn` provided on init must have the following signature:
 
-        `hook(layer, args, kwargs) -> tuple or None`
+        ```
+        hook(
+            layer: tf.keras.layers.Layer,
+            args: tuple,
+            kwargs: dict,
+            outputs: Union[tf.Tensor, tuple],
+        ) -> Union[None, tf.Tensor, tuple]
+        ```
 
-        where the outputted tuple should be
-        `(processed_args: tuple, processed_kwargs: dict)` if any.
-        If `None`, the original args and kwargs will be passed onto the
-        next hook or the layer to use.
+        where the outputted tuple should be the processed outputs, if any,
+        or the singular output tensor.
+        If `None`, the received outputs will be passed onto the
+        next hook or layer to use. Note that if they are modified
+        in-place, those changes will take effect.
     """
 
     def __init__(
@@ -138,20 +153,22 @@ class TFForwardHook(TFHook):
         super().__init__(layer, fn)
         self.always_call = always_call
 
-    def __call__(self, args: tuple, kwargs: dict, output: Any) -> Any:
+    def __call__(
+        self, args: tuple, kwargs: dict, outputs: Union[tf.Tensor, tuple]
+    ) -> Union[tf.Tensor, tuple]:
         """Process the layer's inputs and outputs after the layer is called.
 
         Args:
             args (tuple): The layer's received arguments.
             kwargs (dict): The layer's received keyword arguments.
-            output (Any): The layer's output.
+            outputs (Any): The layer's outputs.
 
         Returns:
-            The processed outputs if any, otherwise the original outputs.
+            The processed outputs if any, otherwise the passed-through outputs.
         """
-        hook_out = self.fn(self.layer, args, kwargs, output)
+        hook_out = self.fn(self.layer, args, kwargs, outputs)
         if hook_out is None:
-            return output
+            return outputs
         return hook_out
 
     def remove(self) -> None:
