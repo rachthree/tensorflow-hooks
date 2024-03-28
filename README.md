@@ -21,7 +21,7 @@ For example:
 import tensorflow as tf
 from tf_hooks import register_forward_pre_hook
 
-model = model = tf.keras.applications.resnet50.ResNet50()
+model = tf.keras.applications.resnet50.ResNet50()
 
 def prehook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict):
     print(f"{layer.name} args received: {args}")
@@ -69,7 +69,7 @@ import tensorflow as tf
 from tf_hooks import register_forward_hook
 from typing import Union
 
-model = model = tf.keras.applications.resnet50.ResNet50()
+model = tf.keras.applications.resnet50.ResNet50()
 
 def hook_fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict, outputs: Union[tf.Tensor, tuple]):
     print(f"{layer.name} args received: {args}")
