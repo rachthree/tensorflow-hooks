@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tensorflow-hooks"
-version = "0.1.1"
+version = "0.1.2"
 description = "PyTorch-like hooks for TensorFlow Keras layers"
 authors = [
     {name = "Craig Chan"}
