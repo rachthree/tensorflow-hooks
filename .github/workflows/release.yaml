@@ -1,0 +1,39 @@
+name: Release Actions
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.11
+    steps:
+    - name: Get tensorflow-hooks
+      uses: actions/checkout@master
+    - name: Setup
+      run: |
+        pip install wheel build twine
+    - name: Build distribution
+      run: |
+        python -m build
+    - name: Create pre-release draft
+      uses: softprops/action-gh-release@v0.1.14
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        name: Release ${{ github.ref_name }}
+        draft: true
+        prerelease: true
+        files: |
+          ${{github.workspace}}/dist/*
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TEST }}
+      run: |
+        twine upload -r testpypi dist/*
