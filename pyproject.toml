@@ -14,7 +14,7 @@ maintainers = [
 ]
 requires-python = ">=3.9"
 readme = "README.md"
-license = {text = "MIT License"}
+license = { file = "LICENSE" }
 keywords = [
     "tensorflow", "tf", "keras", "pytorch", "torch", "hooks",
     "deep learning", "machine learning",
