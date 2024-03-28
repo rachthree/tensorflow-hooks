@@ -9,9 +9,11 @@ jobs:
   release:
     name: Build and Release
     runs-on: ubuntu-latest
-    container:
-      image: python:3.11
     steps:
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11"
     - name: Get tensorflow-hooks
       uses: actions/checkout@master
     - name: Setup
