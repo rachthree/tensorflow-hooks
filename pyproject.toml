@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -14,7 +14,7 @@ maintainers = [
 ]
 requires-python = ">=3.9"
 readme = "README.md"
-license = {text = "MIT"}
+license = { file = "LICENSE" }
 keywords = [
     "tensorflow", "tf", "keras", "pytorch", "torch", "hooks",
     "deep learning", "machine learning",
@@ -36,8 +36,11 @@ test = [
     "safetensors"
 ]
 
-[tool.setuptools]
-packages = ["tf_hooks"]
+[project.urls]
+Homepage = "https://github.com/rachthree/tensorflow-hooks"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.isort]
 known_third_party = ["tensorflow", "keras", "numpy", "scipy"]
