@@ -6,6 +6,21 @@ this utility aims to provide a similar functionality as PyTorch's forward pre-ho
 
 Note: Backward hooks are not supported and are not planned to be supported at this time.
 
+## Prerequisites
+[TensorFlow](https://www.tensorflow.org/install) should be installed.
+`tensorflow-hooks` is tested with versions 2.14.1 and above.
+
+## Installation
+Install via `pip` via
+```bash
+pip install tensorflow-hooks
+```
+
+or clone this repo then use
+```
+pip install .
+```
+
 ## Using a Forward Pre-hook
 A forward pre-hook callable must be:
 ```python
