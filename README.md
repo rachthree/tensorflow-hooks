@@ -1,8 +1,8 @@
 
-# tensorflow-hooks: PyTorch-like hooks for TensorFlow Keras models
+# tensorflow-hooks: PyTorch-like hooks for TensorFlow Keras layers
 One of PyTorch's many strengths are its `torch.nn.Module` hooks.
 Inspired by [this issue](https://github.com/tensorflow/tensorflow/issues/33478),
-this utility aims to provide a similar functionality as PyTorch's forward pre-hooks and hooks to TensorFlow Keras models.
+this utility aims to provide a similar functionality as PyTorch's forward pre-hooks and hooks to TensorFlow Keras layers.
 
 Note: Backward hooks are not supported and are not planned to be supported at this time.
 
