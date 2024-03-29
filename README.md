@@ -55,10 +55,11 @@ The above would result in printing out all the inputs seen by each layer.
 If the received arguments / keyword arguments were modified, or new ones provided, this would affect layer computation.
 
 Each item in the `prehooks` list above is a `tf_hook.hooks.TFForwardPreHook`.
-To register a hook, use `prehook.remove()`. For example, to remove all the hooks applied above:
+To remove a hook, use `prehook.remove()`. For example, to remove all the hooks applied above:
 ```python
 for prehook in prehooks:
     prehook.remove()
+    del hook
 ```
 
 Notes:
@@ -104,10 +105,11 @@ The above would result in printing out all layers' inputs and outputs.
 If the received outputs were modified, or new ones provided, this would affect downstream layers.
 
 Each item in the `hooks` list above is a `tf_hook.hooks.TFForwardHook`.
-To register a hook, use `hook.remove()`. For example, to remove all the hooks applied above:
+To remove a hook, use `hook.remove()`. For example, to remove all the hooks applied above:
 ```python
 for hook in hooks:
     hook.remove()
+    del hook
 ```
 
 Notes:
