@@ -27,7 +27,7 @@ A forward pre-hook callable must be:
 fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict) -> Union[None, Tuple[tuple, dict]]
 ```
 
-During the layer's forward method, the hook will execute before the layer's forward pass. The hook either returns `None` as a passthrough (or inputs have been modified in-place) or `tuple, dict` to provide the arguments and keyword arguments that the layer will receive.
+During the layer's forward pass, the hook will execute before the layer's forward pass. The hook either returns `None` as a passthrough (or inputs have been modified in-place) or `tuple, dict` to provide the arguments and keyword arguments that the layer will receive.
 
 `tf-hooks` registers the hook and modifies the layer's `call` method via `tf_hooks.register_forward_pre_hook`.
 
@@ -74,7 +74,7 @@ A forward hook callable must be:
 fn(layer: tf.keras.layers.Layer, args: tuple, kwargs: dict, outputs: Union[tf.Tensor, tuple]) -> Union[None, tf.Tensor, tuple]
 ```
 
-After the layer's forward method, the hook will execute, using the layer inputs and outputs. The hook either returns `None` as a passthrough (or outputs have been modified in-place) or
+After the layer's forward pass, the hook will execute, using the layer inputs and outputs. The hook either returns `None` as a passthrough (or outputs have been modified in-place) or
 whatever objects the hook function returns. These will be provided to the next layer(s).
 
 `tf-hooks` registers the hook and modifies the layer's `call` method via `tf_hooks.register_forward_hook`.
