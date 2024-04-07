@@ -111,7 +111,7 @@ def register_forward_pre_hook(
     if prepend:
         # Normally, OrderedDict.move_to_end should be used, but
         # Later Keras >= 3.0 converts dicts to keras.src.utils.tracking.TrackedDict,
-        # which doe not have move_to_end
+        # which does not have move_to_end
         # Note: This only works with Python > 3.7 since
         #  that is when dictionaries started maintaining order.
         tmp_pre_hooks = {hook.id: hook}
@@ -171,7 +171,7 @@ def register_forward_hook(
     if prepend:
         # Normally, OrderedDict.move_to_end should be used, but
         # Later Keras >= 3.0 converts dicts to keras.src.utils.tracking.TrackedDict,
-        # which doe not have move_to_end
+        # which does not have move_to_end
         # Note: This only works with Python > 3.7 since
         #  that is when dictionaries started maintaining order.
         tmp_hooks = {hook.id: hook}
